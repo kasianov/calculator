@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 
 public class CalculatorFrame extends JFrame {
     private JTextField textExpression;
@@ -71,7 +72,8 @@ public class CalculatorFrame extends JFrame {
     private void buttonResultClicked(ActionEvent event) {
         if (calculator != null) {
             try {
-                textResult.setText(calculator.evaluate(textExpression.getText()).toString());
+                BigDecimal result = calculator.evaluate(textExpression.getText());
+                textResult.setText(result != null ? result.toString(): "NaN");
             } catch (EvaluationException ex) {
                 String info = ex.getMessage()
                         + "\nExpression: " + ex.getExpression()

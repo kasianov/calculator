@@ -1,7 +1,6 @@
 package com.teamdev.students.calculator.implementation;
 
-import com.teamdev.students.calculator.implementation.operators.BinaryMinusOperator;
-import com.teamdev.students.calculator.implementation.operators.PlusOperator;
+import com.teamdev.students.calculator.implementation.operators.*;
 import com.teamdev.students.calculator.implementation.parsers.*;
 import com.teamdev.students.calculator.intefaces.Operator;
 import com.teamdev.students.calculator.intefaces.Parser;
@@ -21,11 +20,17 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
 
     public static EvaluationStateRecognizer createEvaluationStateRecognizer() {
         List<Operator<BigDecimal>> operatorList = new ArrayList<Operator<BigDecimal>>();
-        Collections.addAll(operatorList, new BinaryMinusOperator(), new PlusOperator());
+        Collections.addAll(operatorList,
+                new BinaryMinusOperator(),
+                new PlusOperator(),
+                new MultiplyOperator(),
+                new DivideOperator(),
+                new PowerOperator());
         OperatorParser binaryOperatorParser = new OperatorParser(operatorList);
         Map<EvaluationState, Parser<EvaluationContext>> evaluationStateParserMap = new HashMap<EvaluationState, Parser<EvaluationContext>>();
         evaluationStateParserMap.put(FINISH, new EndOfExpressionParser());
-        evaluationStateParserMap.put(NUMBER, new IntegerParser());
+        //evaluationStateParserMap.put(NUMBER, new IntegerParser());
+        evaluationStateParserMap.put(NUMBER, new DecimalParser());
         evaluationStateParserMap.put(BINARY_OPERATOR, binaryOperatorParser);
         evaluationStateParserMap.put(LEFT_PARENTHESIS, new LeftParenthesisParser());
         evaluationStateParserMap.put(RIGHT_PARENTHESIS, new RightParenthesisParser());
@@ -36,6 +41,6 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
     @Override
     public boolean accept(EvaluationState currentState, EvaluationContext evaluationContext, boolean afterError) {
         Parser<EvaluationContext> parser = stateParserMap.get(currentState);
-        return parser != null && parser.tryParse(evaluationContext,afterError);
+        return parser != null && parser.tryParse(evaluationContext, afterError);
     }
 }

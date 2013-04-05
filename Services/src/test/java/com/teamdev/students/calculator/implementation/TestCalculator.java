@@ -104,7 +104,7 @@ public class TestCalculator {
     @Test
     public void testOperatorPower(){
         try{
-            Assert.assertEquals("Unexpected result of operator 'power'",new BigDecimal(49),calculator.evaluate("7^"));
+            Assert.assertEquals("Unexpected result of operator 'power'",new BigDecimal(49),calculator.evaluate("7^2"));
         } catch (EvaluationException ex){
             Assert.fail("Unexpected evaluation exception with operator 'power'");
         }
@@ -113,9 +113,72 @@ public class TestCalculator {
     @Test
     public void testDecimal(){
         try{
-            Assert.assertEquals("Unexpected result with decimal number",new BigDecimal(49),calculator.evaluate("4.5*2"));
+            Assert.assertEquals("Unexpected result with decimal number",new BigDecimal("9.0"),calculator.evaluate("4.5*2"));
         } catch (EvaluationException ex){
             Assert.fail("Unexpected evaluation exception with decimal number");
+        }
+    }
+
+    @Test
+    public void testFunctionSqrt(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'sqrt'",new BigDecimal("5"),calculator.evaluate("sqrt(25)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'sqrt'");
+        }
+    }
+
+    @Test
+    public void testFunctionMinOfTwo(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'min' with two arguments",new BigDecimal("5"),calculator.evaluate("min(33,5)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'min' with two arguments");
+        }
+    }
+
+    @Test
+    public void testFunctionMinOfFour(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'min' with four arguments",new BigDecimal("5"),calculator.evaluate("min(33,10,5,5.1)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'min' with four arguments");
+        }
+    }
+
+    @Test
+    public void testFunctionMaxOfTwo(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'max' with two arguments",new BigDecimal("10"),calculator.evaluate("max(9,10)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'max' with two arguments");
+        }
+    }
+
+    @Test
+    public void testFunctionMaxOfFour(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'max' with four arguments",new BigDecimal("100"),calculator.evaluate("max(9,10,100,42.1)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'max' with four arguments");
+        }
+    }
+
+    @Test
+    public void testFunctionSumOfTwo(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'sum' with two arguments",new BigDecimal("10"),calculator.evaluate("sum(4.5,5.5)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'sum' with two arguments");
+        }
+    }
+
+    @Test
+    public void testFunctionSumOfFour(){
+        try{
+            Assert.assertEquals("Unexpected result of function 'sum' with four arguments",new BigDecimal("100"),calculator.evaluate("sum(10,20,30,40)"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception with function 'sum' with four arguments");
         }
     }
 
