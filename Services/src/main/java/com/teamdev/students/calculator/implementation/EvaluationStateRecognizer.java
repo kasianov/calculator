@@ -36,6 +36,6 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
     @Override
     public boolean accept(EvaluationState currentState, EvaluationContext evaluationContext, boolean afterError) {
         Parser<EvaluationContext> parser = stateParserMap.get(currentState);
-        return parser != null ? parser.tryParse(evaluationContext,afterError) : false;
+        return parser != null && parser.tryParse(evaluationContext,afterError);
     }
 }
