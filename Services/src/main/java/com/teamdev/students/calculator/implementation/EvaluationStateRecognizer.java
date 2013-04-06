@@ -1,8 +1,8 @@
 package com.teamdev.students.calculator.implementation;
 
-import com.teamdev.students.calculator.implementation.operators.*;
+import com.teamdev.students.calculator.implementation.operations.*;
 import com.teamdev.students.calculator.implementation.parsers.*;
-import com.teamdev.students.calculator.intefaces.Operator;
+import com.teamdev.students.calculator.intefaces.Operation;
 import com.teamdev.students.calculator.intefaces.Parser;
 import com.teamdev.students.calculator.intefaces.StateRecognizer;
 
@@ -19,7 +19,7 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
     }
 
     public static EvaluationStateRecognizer createEvaluationStateRecognizer() {
-        List<Operator<BigDecimal>> operatorList = new ArrayList<Operator<BigDecimal>>();
+        List<Operation<BigDecimal>> operatorList = new ArrayList<Operation<BigDecimal>>();
         Collections.addAll(operatorList,
                 new BinaryMinusOperator(),
                 new PlusOperator(),
@@ -27,11 +27,21 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
                 new DivideOperator(),
                 new PowerOperator());
         OperatorParser binaryOperatorParser = new OperatorParser(operatorList);
+
+        List<Operation<BigDecimal>> functionList = new ArrayList<Operation<BigDecimal>>();
+        Collections.addAll(functionList,
+                new SqrtFunction(),
+                new MinFunction(),
+                new MaxFunction(),
+                new SumFunction());
+        FunctionParser functionParser = new FunctionParser(functionList);
+
         Map<EvaluationState, Parser<EvaluationContext>> evaluationStateParserMap = new HashMap<EvaluationState, Parser<EvaluationContext>>();
         evaluationStateParserMap.put(FINISH, new EndOfExpressionParser());
-        //evaluationStateParserMap.put(NUMBER, new IntegerParser());
         evaluationStateParserMap.put(NUMBER, new DecimalParser());
         evaluationStateParserMap.put(BINARY_OPERATOR, binaryOperatorParser);
+        evaluationStateParserMap.put(FUNCTION,functionParser);
+        evaluationStateParserMap.put(FUNCTION_SEPARATOR,new FunctionSeparatorParser());
         evaluationStateParserMap.put(LEFT_PARENTHESIS, new LeftParenthesisParser());
         evaluationStateParserMap.put(RIGHT_PARENTHESIS, new RightParenthesisParser());
 

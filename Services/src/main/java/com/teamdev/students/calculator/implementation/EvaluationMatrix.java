@@ -23,11 +23,13 @@ public class EvaluationMatrix implements TransitionMatrix<EvaluationState> {
 
     public static EvaluationMatrix createEvaluationMatrix() {
         Map<EvaluationState, Set<EvaluationState>> evaluationStateSetMap = new HashMap<EvaluationState, Set<EvaluationState>>();
-        evaluationStateSetMap.put(START, EnumSet.of(NUMBER, LEFT_PARENTHESIS));
-        evaluationStateSetMap.put(NUMBER, EnumSet.of(BINARY_OPERATOR, FINISH, RIGHT_PARENTHESIS));
-        evaluationStateSetMap.put(BINARY_OPERATOR, EnumSet.of(NUMBER, LEFT_PARENTHESIS));
-        evaluationStateSetMap.put(LEFT_PARENTHESIS, EnumSet.of(NUMBER, LEFT_PARENTHESIS));
-        evaluationStateSetMap.put(RIGHT_PARENTHESIS, EnumSet.of(BINARY_OPERATOR, FINISH, RIGHT_PARENTHESIS));
+        evaluationStateSetMap.put(START, EnumSet.of(NUMBER, LEFT_PARENTHESIS,FUNCTION));
+        evaluationStateSetMap.put(NUMBER, EnumSet.of(BINARY_OPERATOR, FINISH, RIGHT_PARENTHESIS,FUNCTION_SEPARATOR));
+        evaluationStateSetMap.put(BINARY_OPERATOR, EnumSet.of(NUMBER, LEFT_PARENTHESIS,FUNCTION));
+        evaluationStateSetMap.put(FUNCTION,EnumSet.of(LEFT_PARENTHESIS));
+        evaluationStateSetMap.put(FUNCTION_SEPARATOR,EnumSet.of(LEFT_PARENTHESIS,NUMBER,FUNCTION));
+        evaluationStateSetMap.put(LEFT_PARENTHESIS, EnumSet.of(NUMBER, LEFT_PARENTHESIS,FUNCTION));//RIGHT_PARENTHESIS for functions without arguments
+        evaluationStateSetMap.put(RIGHT_PARENTHESIS, EnumSet.of(BINARY_OPERATOR, FINISH, RIGHT_PARENTHESIS,FUNCTION_SEPARATOR));
 
         return new EvaluationMatrix(FINISH, evaluationStateSetMap, START);
     }

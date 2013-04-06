@@ -1,7 +1,6 @@
 package com.teamdev.students.calculator.implementation.parsers;
 
 import com.teamdev.students.calculator.implementation.EvaluationContext;
-import com.teamdev.students.calculator.implementation.operators.RightParenthesisOperator;
 import com.teamdev.students.calculator.intefaces.Parser;
 
 public class RightParenthesisParser implements Parser<EvaluationContext> {
@@ -14,7 +13,7 @@ public class RightParenthesisParser implements Parser<EvaluationContext> {
         }
 
         if (!afterError) {
-            if (evaluationContext.pushOperator(new RightParenthesisOperator())) {
+            if (evaluationContext.getEvaluator().pushRightParenthesis()) {
                 evaluationContext.setCurrentPosition(position + 1);
                 return true;
             }

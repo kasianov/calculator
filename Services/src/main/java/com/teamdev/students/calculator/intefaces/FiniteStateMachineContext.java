@@ -1,7 +1,8 @@
 package com.teamdev.students.calculator.intefaces;
 
 public interface FiniteStateMachineContext<State extends Enum,
-        Result> {
+        Result,
+        ContextEvaluator extends Evaluator<Result,Operation<Result>>> {
 
     State getState();
 
@@ -10,4 +11,6 @@ public interface FiniteStateMachineContext<State extends Enum,
     void errorOccurred();
 
     Result getResult();
+
+    ContextEvaluator getEvaluator();
 }

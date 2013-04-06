@@ -1,26 +1,25 @@
 package com.teamdev.students.calculator.implementation;
 
 import com.teamdev.students.calculator.intefaces.FiniteStateMachineContext;
-import com.teamdev.students.calculator.intefaces.Operator;
 
 import java.math.BigDecimal;
-import java.util.*;
 
-public class EvaluationContext implements FiniteStateMachineContext<EvaluationState, BigDecimal> {
+public class EvaluationContext implements FiniteStateMachineContext<EvaluationState, BigDecimal, CalculatorEvaluator> {
 
     private EvaluationState state;
-    private int currentPosition = 0;
+    private int currentPosition;
     private String expression;
-    private Map<String, BigDecimal> valueMap = new HashMap<String, BigDecimal>();
-    private Map<String, Operator<BigDecimal>> operatorMap = new HashMap<String, Operator<BigDecimal>>();
-    private Deque<Operator<BigDecimal>> operatorStack = new LinkedList<Operator<BigDecimal>>();
-    private List<String> outputQueue = new ArrayList<String>();
-    private String valueBaseName = "value";
-    private int valueCount = 0;
     private String errorMessage;
+    private CalculatorEvaluator evaluator;
 
-    public EvaluationContext(String expression) {
+    public EvaluationContext(String expression, CalculatorEvaluator evaluator) {
         this.expression = expression;
+        this.evaluator = evaluator;
+    }
+
+    @Override
+    public CalculatorEvaluator getEvaluator() {
+        return evaluator;
     }
 
     @Override
@@ -35,12 +34,12 @@ public class EvaluationContext implements FiniteStateMachineContext<EvaluationSt
         }
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     /**
@@ -91,102 +90,8 @@ public class EvaluationContext implements FiniteStateMachineContext<EvaluationSt
      * evaluates a result of the input expression
      */
     public BigDecimal getResult() {
-        return evaluateResult();
+        return evaluator.getResult();
     }
 
-    private BigDecimal evaluateResult() {
-        if (!popOperatorStack()) {
-            return null;
-        }
 
-        for (ListIterator<String> iterator = outputQueue.listIterator(); iterator.hasNext(); ) {
-            String element = iterator.next();
-            if (!element.startsWith(valueBaseName)) {
-                iterator.remove();
-                Operator<BigDecimal> operator = operatorMap.get(element);
-                int argumentsCount = operator.getArgumentsCount();
-                BigDecimal[] arguments = new BigDecimal[argumentsCount];
-                for (int i = 0; i < argumentsCount; ++i) {
-                    arguments[i] = valueMap.get(iterator.previous());
-                    iterator.remove();
-                }
-                String valueName = valueBaseName + valueCount++;
-                valueMap.put(valueName, operator.getResult(arguments));
-                iterator.add(valueName);
-            }
-        }
-        return valueMap.get(outputQueue.get(0));
-    }
-
-    private boolean popOperatorStack() {
-        while (operatorStack.peek() != null) {
-            if (operatorStack.peek().isLeftParenthesis()) {
-                return false;
-            }
-            outputQueue.add(operatorStack.pop().getStringRepresentation());
-        }
-        return true;
-    }
-
-    /**
-     * pushes number to a number stack
-     *
-     * @param number - value
-     */
-    public void pushNumber(BigDecimal number) {
-        String valueName = valueBaseName + valueCount++;
-        valueMap.put(valueName, number);
-        outputQueue.add(valueName);
-    }
-
-    /**
-     * tries to push an operator to a operator stack
-     *
-     * @param operator - operator to push
-     * @return - returns false only if the operator is a closing parenthesis and it's mismatched
-     */
-    public boolean pushOperator(Operator<BigDecimal> operator) {
-        if (!operatorMap.keySet().contains(operator.getStringRepresentation())) {
-            operatorMap.put(operator.getStringRepresentation(), operator);
-        }
-
-        if (operator.isLeftParenthesis()) {
-            operatorStack.push(operator);
-        } else if (operator.isRightParenthesis()) {
-            return pushRightParenthesis();
-        } else {
-            push(operator);
-        }
-        return true;
-    }
-
-    private boolean pushRightParenthesis() {
-        Operator<BigDecimal> peekedOperator = operatorStack.peek();
-        while (peekedOperator != null) {
-            if (!peekedOperator.isLeftParenthesis()) {
-                outputQueue.add(operatorStack.pop().getStringRepresentation());
-            } else {
-                operatorStack.pop();
-                return true;
-            }
-            peekedOperator = operatorStack.peek();
-        }
-        return false;
-    }
-
-    private void push(Operator<BigDecimal> operator) {
-        if (!operatorStack.isEmpty()) {
-            Operator<BigDecimal> peekedOperator = operatorStack.peek();
-            while (peekedOperator != null && !peekedOperator.isLeftParenthesis()
-                    && (operator.getAssociativity() == Associativity.LEFT
-                    && operator.getPrecedence() <= peekedOperator.getPrecedence()
-                    || operator.getPrecedence() < peekedOperator.getPrecedence())
-                    ) {
-
-                outputQueue.add(operatorStack.pop().getStringRepresentation());
-                peekedOperator = operatorStack.peek();
-            }
-        }
-        operatorStack.push(operator);
-    }
 }

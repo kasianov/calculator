@@ -6,6 +6,7 @@ public class Calculator extends AbstractFiniteStateMachine<
         EvaluationState,
         EvaluationMatrix,
         BigDecimal,
+        CalculatorEvaluator,
         EvaluationContext,
         EvaluationStateRecognizer,
         EvaluationException> {
@@ -18,8 +19,8 @@ public class Calculator extends AbstractFiniteStateMachine<
         this.stateRecognizer = stateRecognizer;
     }
 
-    public static Calculator createCalculator(){
-        return new Calculator(EvaluationMatrix.createEvaluationMatrix(),EvaluationStateRecognizer.createEvaluationStateRecognizer());
+    public static Calculator createCalculator() {
+        return new Calculator(EvaluationMatrix.createEvaluationMatrix(), EvaluationStateRecognizer.createEvaluationStateRecognizer());
     }
 
     @Override
@@ -38,6 +39,6 @@ public class Calculator extends AbstractFiniteStateMachine<
     }
 
     public BigDecimal evaluate(String expression) throws EvaluationException {
-        return run(new EvaluationContext(expression.replaceAll(" ", "")));
+        return run(new EvaluationContext(expression.replaceAll(" ", ""), new CalculatorEvaluator()));
     }
 }

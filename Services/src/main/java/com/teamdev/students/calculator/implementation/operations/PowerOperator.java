@@ -1,12 +1,13 @@
-package com.teamdev.students.calculator.implementation.operators;
+package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
 
 import java.math.BigDecimal;
 
-public class PowerOperator extends AbstractOperator {
+public class PowerOperator extends AbstractOperation {
     public PowerOperator() {
-        super(2, Associativity.LEFT, 3, "^");
+        super(Associativity.LEFT, 2, 2, 3, "^");
+        setArgumentsCount(2);
     }
 
     @Override

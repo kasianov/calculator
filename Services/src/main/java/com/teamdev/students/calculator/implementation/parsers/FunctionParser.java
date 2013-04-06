@@ -6,15 +6,13 @@ import com.teamdev.students.calculator.intefaces.Operation;
 import java.math.BigDecimal;
 import java.util.List;
 
-
-public class OperatorParser extends BaseOperationParser {
-    public OperatorParser(List<Operation<BigDecimal>> operations) {
+public class FunctionParser extends BaseOperationParser {
+    public FunctionParser(List<Operation<BigDecimal>> operations) {
         super(operations);
     }
 
     @Override
     protected boolean doPush(EvaluationContext context, Operation<BigDecimal> operation) {
-        context.getEvaluator().pushOperator(operation);
-        return true;
+        return context.getEvaluator().pushFunction(operation);
     }
 }

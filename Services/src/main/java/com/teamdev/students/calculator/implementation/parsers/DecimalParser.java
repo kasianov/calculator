@@ -33,8 +33,11 @@ public class DecimalParser implements Parser<EvaluationContext> {
         --count;
         if (number != null) {
             if (!afterError) {
-                evaluationContext.pushNumber(new BigDecimal(expression.substring(position, position + count)));
-                evaluationContext.setCurrentPosition(position + count);
+                if(evaluationContext.getEvaluator().pushValue(number)){
+                    evaluationContext.setCurrentPosition(position + count);
+                    return true;
+                }
+                return false;
             } else {
                 evaluationContext.setErrorMessage("Unexpected number token");
             }

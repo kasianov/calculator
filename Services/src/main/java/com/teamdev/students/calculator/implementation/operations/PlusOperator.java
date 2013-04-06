@@ -1,12 +1,13 @@
-package com.teamdev.students.calculator.implementation.operators;
+package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
 
 import java.math.BigDecimal;
 
-public class BinaryMinusOperator extends AbstractOperator {
-    public BinaryMinusOperator() {
-        super(2, Associativity.LEFT, 1, "-");
+public class PlusOperator extends AbstractOperation {
+    public PlusOperator() {
+        super(Associativity.LEFT, 2, 2, 1, "+");
+        setArgumentsCount(2);
     }
 
     @Override
@@ -14,6 +15,6 @@ public class BinaryMinusOperator extends AbstractOperator {
         if (bigDecimals.length != getArgumentsCount()) {
             return null;
         }
-        return bigDecimals[1].subtract(bigDecimals[0]);
+        return bigDecimals[1].add(bigDecimals[0]);
     }
 }

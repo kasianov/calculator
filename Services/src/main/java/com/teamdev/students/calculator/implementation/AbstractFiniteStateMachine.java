@@ -1,21 +1,20 @@
 package com.teamdev.students.calculator.implementation;
 
-import com.teamdev.students.calculator.intefaces.FiniteStateMachine;
-import com.teamdev.students.calculator.intefaces.FiniteStateMachineContext;
-import com.teamdev.students.calculator.intefaces.StateRecognizer;
-import com.teamdev.students.calculator.intefaces.TransitionMatrix;
+import com.teamdev.students.calculator.intefaces.*;
 
 public abstract class AbstractFiniteStateMachine<
         State extends Enum,
         Matrix extends TransitionMatrix<State>,
         Result,
-        Context extends FiniteStateMachineContext<State, Result>,
+        ContextEvaluator extends Evaluator<Result,Operation<Result>>,
+        Context extends FiniteStateMachineContext<State, Result,ContextEvaluator>,
         Recognizer extends StateRecognizer<State, Context>,
         TransitionError extends Exception>
         implements FiniteStateMachine<
         State,
         Matrix,
         Result,
+        ContextEvaluator,
         Context,
         Recognizer,
         TransitionError> {

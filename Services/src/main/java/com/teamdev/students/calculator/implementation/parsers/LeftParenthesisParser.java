@@ -1,7 +1,6 @@
 package com.teamdev.students.calculator.implementation.parsers;
 
 import com.teamdev.students.calculator.implementation.EvaluationContext;
-import com.teamdev.students.calculator.implementation.operators.LeftParenthesisOperator;
 import com.teamdev.students.calculator.intefaces.Parser;
 
 public class LeftParenthesisParser implements Parser<EvaluationContext> {
@@ -14,7 +13,7 @@ public class LeftParenthesisParser implements Parser<EvaluationContext> {
         }
 
         if (!afterError) {
-            evaluationContext.pushOperator(new LeftParenthesisOperator());
+            evaluationContext.getEvaluator().pushLeftParenthesis();
             evaluationContext.setCurrentPosition(position + 1);
         } else {
             evaluationContext.setErrorMessage("Unexpected left parenthesis");

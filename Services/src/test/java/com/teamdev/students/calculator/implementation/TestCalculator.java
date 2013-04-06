@@ -167,7 +167,7 @@ public class TestCalculator {
     @Test
     public void testFunctionSumOfTwo(){
         try{
-            Assert.assertEquals("Unexpected result of function 'sum' with two arguments",new BigDecimal("10"),calculator.evaluate("sum(4.5,5.5)"));
+            Assert.assertEquals("Unexpected result of function 'sum' with two arguments",new BigDecimal("10.0"),calculator.evaluate("sum(4.5,5.5)"));
         } catch (EvaluationException ex){
             Assert.fail("Unexpected evaluation exception with function 'sum' with two arguments");
         }
@@ -179,6 +179,15 @@ public class TestCalculator {
             Assert.assertEquals("Unexpected result of function 'sum' with four arguments",new BigDecimal("100"),calculator.evaluate("sum(10,20,30,40)"));
         } catch (EvaluationException ex){
             Assert.fail("Unexpected evaluation exception with function 'sum' with four arguments");
+        }
+    }
+
+    @Test
+    public void testComplexExpression(){
+        try{
+            Assert.assertEquals("Unexpected result of complex expression 'sqrt(sqrt(sum(max(4,9,7),min(16,30,22))) + 10.2 * 2-0.4)^3'",new BigDecimal("125"),calculator.evaluate("sqrt(sqrt(sum(max(4,9,7),min(16,30,22))) + 10.2 * 2-0.4)^3"));
+        } catch (EvaluationException ex){
+            Assert.fail("Unexpected evaluation exception on complex expression 'sqrt(sqrt(sum(max(4,9,7),min(16,30,22))) + 10.2 * 2-0.4)^3'");
         }
     }
 
