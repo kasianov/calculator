@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * base class for function and operator parsers
+ */
 public abstract class BaseOperationParser implements Parser<EvaluationContext> {
     private Map<String, Operation<BigDecimal>> stringOperationMap = new HashMap<String, Operation<BigDecimal>>();
 
