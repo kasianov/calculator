@@ -14,6 +14,9 @@ public class SqrtFunction extends AbstractOperation {
         if (arguments.length != getArgumentsCount()) {
             return null;
         }
+        if(arguments[0].compareTo(new BigDecimal("0")) < 0){
+            return null;
+        }
         return new BigDecimal(Math.sqrt(arguments[0].doubleValue()));
     }
 }

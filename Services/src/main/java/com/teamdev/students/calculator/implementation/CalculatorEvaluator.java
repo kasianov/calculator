@@ -20,6 +20,10 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
     private int valueCount;
     private String leftParenthesisName = "leftParenthesis";
 
+    /**
+     * parses the output queue as RPN
+     * @return - result of calculation
+     */
     private BigDecimal evaluateResult() {
         if (!popOutOperationStack()) {
             return null;
@@ -36,7 +40,11 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                     iterator.remove();
                 }
                 String valueName = valueBaseName + valueCount++;
-                valueMap.put(valueName, operation.getResult(arguments));
+                BigDecimal tempResult = operation.getResult(arguments);
+                if(tempResult == null){
+                    return null;
+                }
+                valueMap.put(valueName, tempResult);
                 iterator.add(valueName);
             }
         }
