@@ -33,7 +33,9 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
                 new SqrtFunction(),
                 new MinFunction(),
                 new MaxFunction(),
-                new SumFunction());
+                new SumFunction(),
+                new SinFunction(),
+                new CosFunction());
         FunctionParser functionParser = new FunctionParser(functionList);
 
         Map<EvaluationState, Parser<EvaluationContext>> evaluationStateParserMap = new HashMap<EvaluationState, Parser<EvaluationContext>>();

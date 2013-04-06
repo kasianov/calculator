@@ -4,9 +4,9 @@ import com.teamdev.students.calculator.implementation.Associativity;
 
 import java.math.BigDecimal;
 
-public class SqrtFunction extends AbstractOperation {
-    public SqrtFunction() {
-        super(Associativity.NONE, 1, 1, 2, "sqrt");
+public class SinFunction extends AbstractOperation {
+    public SinFunction() {
+        super(Associativity.NONE, 1, 1, 2, "sin");
         setArgumentsCount(1);
     }
 
@@ -15,9 +15,6 @@ public class SqrtFunction extends AbstractOperation {
         if (arguments.length != getArgumentsCount()) {
             return null;
         }
-        if (arguments[0].compareTo(new BigDecimal("0")) < 0) {
-            return null;
-        }
-        return new BigDecimal(Math.sqrt(arguments[0].doubleValue()));
+        return new BigDecimal(Math.sin(arguments[0].doubleValue()));
     }
 }

@@ -72,6 +72,7 @@ public class CalculatorFrame extends JFrame {
     private void buttonResultClicked(ActionEvent event) {
         if (calculator != null) {
             try {
+                textExpression.setText(textExpression.getText().replaceAll(" ",""));
                 BigDecimal result = calculator.evaluate(textExpression.getText());
                 textResult.setText(result != null ? result.toString(): "NaN");
             } catch (EvaluationException ex) {
