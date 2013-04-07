@@ -2,7 +2,7 @@ package com.teamdev.students.calculator.intefaces;
 
 import com.teamdev.students.calculator.implementation.Associativity;
 
-public interface Operation<Result> {
+public interface Operation<Result, OperationException extends Exception> {
     String getStringRepresentation();
 
     int getMinimumArgumentsCount();
@@ -13,7 +13,7 @@ public interface Operation<Result> {
 
     int getMaximumArgumentsCount();
 
-    Result getResult(Result[] arguments);
+    Result getResult(Result[] arguments) throws OperationException;
 
     int getPrecedence();
 

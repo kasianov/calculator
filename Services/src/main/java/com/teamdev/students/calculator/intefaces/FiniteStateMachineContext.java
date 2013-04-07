@@ -2,7 +2,7 @@ package com.teamdev.students.calculator.intefaces;
 
 public interface FiniteStateMachineContext<State extends Enum,
         Result,
-        ContextEvaluator extends Evaluator<Result,Operation<Result>>> {
+        ResultError extends Exception> {
 
     State getState();
 
@@ -10,7 +10,9 @@ public interface FiniteStateMachineContext<State extends Enum,
 
     void errorOccurred();
 
-    Result getResult();
+    void setInErrorState();
 
-    ContextEvaluator getEvaluator();
+    boolean isInErrorState();
+
+    Result getResult() throws ResultError;
 }

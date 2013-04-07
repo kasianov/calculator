@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 
 import java.math.BigDecimal;
 
@@ -11,9 +12,12 @@ public class DivideOperator extends AbstractOperation {
     }
 
     @Override
-    public BigDecimal getResult(BigDecimal[] arguments) {
-        if (arguments.length != getArgumentsCount() || arguments[0].equals(new BigDecimal("0"))) {
-            return null;
+    public BigDecimal getResult(BigDecimal[] arguments) throws MathematicalError {
+        if (arguments.length != getArgumentsCount()) {
+            throw new MathematicalError("Wrong number of operands in 'divide' operator");
+        }
+        if (arguments[0].equals(new BigDecimal("0"))) {
+            throw new MathematicalError("Division by zero error");
         }
         try {
             //more precise result, but if input for example is 10/3 then exception is thrown

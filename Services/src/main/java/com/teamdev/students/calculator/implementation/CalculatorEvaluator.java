@@ -6,12 +6,12 @@ import com.teamdev.students.calculator.intefaces.Operation;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigDecimal>> {
+public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigDecimal, MathematicalError>, MathematicalError> {
 
     private Deque<FunctionStackElement> functionStack = new LinkedList<FunctionStackElement>();
     private Map<String, BigDecimal> valueMap = new HashMap<String, BigDecimal>();
     private Deque<String> operationStack = new LinkedList<String>();
-    private Map<String, Operation<BigDecimal>> operationMap = new HashMap<String, Operation<BigDecimal>>();
+    private Map<String, Operation<BigDecimal, MathematicalError>> operationMap = new HashMap<String, Operation<BigDecimal, MathematicalError>>();
     private List<String> outputQueue = new LinkedList<String>();
     private String operatorBaseName = "operator";
     private int operationCount;
@@ -22,17 +22,18 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
 
     /**
      * parses the output queue as RPN
+     *
      * @return - result of calculation
      */
-    private BigDecimal evaluateResult() {
+    private BigDecimal evaluateResult() throws MathematicalError {
         if (!popOutOperationStack()) {
-            return null;
+            throw new MathematicalError("Mismatched parentheses in the expression");
         }
         for (ListIterator<String> iterator = outputQueue.listIterator(); iterator.hasNext(); ) {
             String element = iterator.next();
             if (!element.startsWith(valueBaseName)) {
                 iterator.remove();
-                Operation<BigDecimal> operation = operationMap.get(element);
+                Operation<BigDecimal, MathematicalError> operation = operationMap.get(element);
                 int argumentsCount = operation.getArgumentsCount();
                 BigDecimal[] arguments = new BigDecimal[argumentsCount];
                 for (int i = 0; i < argumentsCount; ++i) {
@@ -41,7 +42,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                 }
                 String valueName = valueBaseName + valueCount++;
                 BigDecimal tempResult = operation.getResult(arguments);
-                if(tempResult == null){
+                if (tempResult == null) {
                     return null;
                 }
                 valueMap.put(valueName, tempResult);
@@ -68,15 +69,18 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
      * if there is a function in function stack and its current arguments count = 0, then increases the count
      * returns false only if there is a function in a function stack and it doesn't receive any arguments but value is pushed
      */
-    public boolean pushValue(BigDecimal value) {
+    public void pushValue(BigDecimal value) throws MathematicalError {
         String valueName = valueBaseName + valueCount++;
         valueMap.put(valueName, value);
         outputQueue.add(valueName);
         FunctionStackElement lastFunction = functionStack.peek();
-        if (lastFunction != null && lastFunction.getAddedArgumentsCount() == 0) {
-            return lastFunction.incrementArgumentsCount();
+        if (lastFunction != null
+                && lastFunction.getAddedArgumentsCount() == 0
+                && !lastFunction.incrementArgumentsCount()) {
+            throw new MathematicalError("Wrong number of arguments for ["
+                    + lastFunction.getFunction().getStringRepresentation()
+                    + "] function");
         }
-        return true;
     }
 
     @Override
@@ -86,11 +90,11 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
      *  pops out an operation stack while an element at the the top of the stack has less precedence
      *  than new operator or the new operator is left associative and has precedence less or equal to the top element
      */
-    public void pushOperator(Operation<BigDecimal> operator) {
+    public void pushOperator(Operation<BigDecimal, MathematicalError> operator) {
         String name = operatorBaseName + operationCount++;
         operationMap.put(name, operator);
         if (!operationStack.isEmpty()) {
-            Operation<BigDecimal> peekedOperator = operationMap.get(operationStack.peek());
+            Operation<BigDecimal, MathematicalError> peekedOperator = operationMap.get(operationStack.peek());
             while (peekedOperator != null
                     && (operator.getAssociativity() == Associativity.LEFT
                     && operator.getPrecedence() <= peekedOperator.getPrecedence()
@@ -120,7 +124,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
      * the function is popped out of the function stack
      * returns false if no left parenthesis operator is found or the popped function has wrong number of arguments
      */
-    public boolean pushRightParenthesis() {
+    public void pushRightParenthesis() throws MathematicalError {
         String operator = operationStack.peek();
         while (operator != null) {
             if (!operator.startsWith(leftParenthesisName)) {
@@ -133,13 +137,17 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                     operationStack.pop();
                     outputQueue.add(operator);
                     FunctionStackElement lastFunction = functionStack.pop();
-                    return lastFunction.hasMinimumArgumentsCount();
+                    if (!lastFunction.hasMinimumArgumentsCount()) {
+                        throw new MathematicalError("Wrong number of arguments for ["
+                                + lastFunction.getFunction().getStringRepresentation()
+                                + "] function");
+                    }
                 }
-                return true;
+                return;
             }
             operator = operationStack.peek();
         }
-        return false;
+        throw new MathematicalError("Mismatched right parenthesis");
     }
 
     @Override
@@ -148,16 +156,19 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
      * if the function stack is not empty, then increases the number of arguments of the top function
      * returns false only if the function, which number of arguments was increases, doesn't take one more argument
      */
-    public boolean pushFunction(Operation<BigDecimal> operator) {
+    public void pushFunction(Operation<BigDecimal, MathematicalError> operator) throws MathematicalError {
         String name = functionBaseName + operationCount++;
         operationMap.put(name, operator);
         FunctionStackElement lastFunction = functionStack.peek();
         functionStack.push(new FunctionStackElement(operator));
         operationStack.push(name);
-        if (lastFunction != null && lastFunction.getAddedArgumentsCount() == 0) {
-            return lastFunction.incrementArgumentsCount();
+        if (lastFunction != null
+                && lastFunction.getAddedArgumentsCount() == 0
+                && !lastFunction.incrementArgumentsCount()) {
+            throw new MathematicalError("Wrong number of arguments for ["
+                    + lastFunction.getFunction().getStringRepresentation()
+                    + "] function");
         }
-        return true;
     }
 
     @Override
@@ -167,7 +178,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
      * increases a number of arguments of the function
      * returns false if no left parenthesis was found or the function doesn't take one more arguments
      */
-    public boolean pushFunctionSeparator() {
+    public void pushFunctionSeparator() throws MathematicalError {
         String operator = operationStack.peek();
         while (operator != null) {
             if (!operator.startsWith(leftParenthesisName)) {
@@ -175,31 +186,40 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                 outputQueue.add(operator);
             } else {
                 FunctionStackElement lastFunction = functionStack.peek();
-                return lastFunction.incrementArgumentsCount();
+                if (!lastFunction.incrementArgumentsCount()) {
+                    throw new MathematicalError("Wrong number of arguments for ["
+                            + lastFunction.getFunction().getStringRepresentation()
+                            + "] function");
+                }
+                return;
             }
             operator = operationStack.peek();
         }
-        return false;
+        throw new MathematicalError("Misplaced function separator");
     }
 
     @Override
     /**
      * returns a result
      */
-    public BigDecimal getResult() {
+    public BigDecimal getResult() throws MathematicalError {
         return evaluateResult();
     }
 
     private class FunctionStackElement {
         private int addedArgumentsCount;
-        private Operation<BigDecimal> function;
+        private Operation<BigDecimal, MathematicalError> function;
 
-        public FunctionStackElement(Operation<BigDecimal> function) {
+        public FunctionStackElement(Operation<BigDecimal, MathematicalError> function) {
             this.function = function;
         }
 
         public int getAddedArgumentsCount() {
             return addedArgumentsCount;
+        }
+
+        public Operation<BigDecimal, MathematicalError> getFunction() {
+            return function;
         }
 
         public boolean incrementArgumentsCount() {

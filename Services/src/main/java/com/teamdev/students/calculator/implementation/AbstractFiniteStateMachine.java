@@ -6,30 +6,25 @@ public abstract class AbstractFiniteStateMachine<
         State extends Enum,
         Matrix extends TransitionMatrix<State>,
         Result,
-        ContextEvaluator extends Evaluator<Result,Operation<Result>>,
-        Context extends FiniteStateMachineContext<State, Result,ContextEvaluator>,
+        Context extends FiniteStateMachineContext<State, Result,?>,
         Recognizer extends StateRecognizer<State, Context>,
         TransitionError extends Exception>
         implements FiniteStateMachine<
         State,
         Matrix,
-        Result,
-        ContextEvaluator,
         Context,
         Recognizer,
         TransitionError> {
 
     @Override
-    public Result run(Context context) throws TransitionError {
+    public void run(Context context) throws TransitionError {
         Matrix matrix = getTransitionMatrix();
         context.setState(matrix.getStartState());
         while (!matrix.isFinishState(context.getState())) {
             if (!moveForward(context)) {
                 deadlock(context);
-                return null;
             }
         }
-        return context.getResult();
     }
 
     @Override
@@ -38,12 +33,15 @@ public abstract class AbstractFiniteStateMachine<
      * if no states was accepted then moves through all possible states
      * to find unexpected element
      */
-    public boolean moveForward(Context context) {
+    public boolean moveForward(Context context){
         Matrix matrix = getTransitionMatrix();
         Recognizer recognizer = getStateRecognizer();
         State currentState = context.getState();
         for (State possibleState : matrix.getPossibleStates(currentState)) {
             if (recognizer.accept(possibleState, context, false)) {
+                if(context.isInErrorState()){
+                    return false;
+                }
                 context.setState(possibleState);
                 return true;
             }

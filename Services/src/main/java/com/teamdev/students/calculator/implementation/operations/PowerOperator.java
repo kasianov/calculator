@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 
 import java.math.BigDecimal;
 
@@ -11,10 +12,10 @@ public class PowerOperator extends AbstractOperation {
     }
 
     @Override
-    public BigDecimal getResult(BigDecimal[] arguments) {
+    public BigDecimal getResult(BigDecimal[] arguments) throws MathematicalError {
         if (arguments.length != getArgumentsCount()) {
-            return null;
+            throw new MathematicalError("Wrong number of operands in 'power' operator");
         }
-        return new BigDecimal(Math.pow(arguments[1].doubleValue(),arguments[0].doubleValue()));
+        return new BigDecimal(Math.pow(arguments[1].doubleValue(), arguments[0].doubleValue()));
     }
 }

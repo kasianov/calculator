@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 
 import java.math.BigDecimal;
 
@@ -10,9 +11,9 @@ public class SumFunction extends AbstractOperation {
     }
 
     @Override
-    public BigDecimal getResult(BigDecimal[] arguments) {
-        if (arguments.length < getMinimumArgumentsCount()) {
-            return null;
+    public BigDecimal getResult(BigDecimal[] arguments) throws MathematicalError {
+        if (arguments.length < getMinimumArgumentsCount() || arguments.length > getMaximumArgumentsCount()) {
+            throw new MathematicalError("Wrong number of arguments in 'sum' function");
         }
         BigDecimal sum = new BigDecimal(0);
         for (BigDecimal argument : arguments) {

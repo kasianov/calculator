@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.parsers;
 
 import com.teamdev.students.calculator.implementation.EvaluationContext;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 import com.teamdev.students.calculator.intefaces.Parser;
 
 public class RightParenthesisParser implements Parser<EvaluationContext> {
@@ -13,15 +14,16 @@ public class RightParenthesisParser implements Parser<EvaluationContext> {
         }
 
         if (!afterError) {
-            if (evaluationContext.getEvaluator().pushRightParenthesis()) {
+            try{
+                evaluationContext.getEvaluator().pushRightParenthesis();
                 evaluationContext.setCurrentPosition(position + 1);
-                return true;
+            } catch (MathematicalError ex){
+                evaluationContext.setErrorMessage(ex.getMathematicalError());
+                evaluationContext.setInErrorState();
             }
-            return false;
         } else {
-            evaluationContext.setErrorMessage("Right parenthesis is either mismatched or misplaced");
-            return true;
+            evaluationContext.setErrorMessage("Misplaced right parenthesis");
         }
-
+        return true;
     }
 }

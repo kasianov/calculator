@@ -19,7 +19,7 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
     }
 
     public static EvaluationStateRecognizer createEvaluationStateRecognizer() {
-        List<Operation<BigDecimal>> operatorList = new ArrayList<Operation<BigDecimal>>();
+        List<Operation<BigDecimal, MathematicalError>> operatorList = new ArrayList<Operation<BigDecimal, MathematicalError>>();
         Collections.addAll(operatorList,
                 new BinaryMinusOperator(),
                 new PlusOperator(),
@@ -28,7 +28,7 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
                 new PowerOperator());
         OperatorParser binaryOperatorParser = new OperatorParser(operatorList);
 
-        List<Operation<BigDecimal>> functionList = new ArrayList<Operation<BigDecimal>>();
+        List<Operation<BigDecimal, MathematicalError>> functionList = new ArrayList<Operation<BigDecimal, MathematicalError>>();
         Collections.addAll(functionList,
                 new SqrtFunction(),
                 new MinFunction(),
@@ -42,8 +42,8 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
         evaluationStateParserMap.put(FINISH, new EndOfExpressionParser());
         evaluationStateParserMap.put(NUMBER, new DecimalParser());
         evaluationStateParserMap.put(BINARY_OPERATOR, binaryOperatorParser);
-        evaluationStateParserMap.put(FUNCTION,functionParser);
-        evaluationStateParserMap.put(FUNCTION_SEPARATOR,new FunctionSeparatorParser());
+        evaluationStateParserMap.put(FUNCTION, functionParser);
+        evaluationStateParserMap.put(FUNCTION_SEPARATOR, new FunctionSeparatorParser());
         evaluationStateParserMap.put(LEFT_PARENTHESIS, new LeftParenthesisParser());
         evaluationStateParserMap.put(RIGHT_PARENTHESIS, new RightParenthesisParser());
 

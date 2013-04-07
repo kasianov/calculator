@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.parsers;
 
 import com.teamdev.students.calculator.implementation.EvaluationContext;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 import com.teamdev.students.calculator.intefaces.Parser;
 
 import java.math.BigDecimal;
@@ -37,13 +38,19 @@ public class IntegerParser implements Parser<EvaluationContext> {
         --count;
         if (number != null) {
             if (!afterError) {
-                evaluationContext.getEvaluator().pushValue(new BigDecimal(expression.substring(position, position + count)));
-                evaluationContext.setCurrentPosition(position + count);
+                try{
+                    evaluationContext.getEvaluator().pushValue(new BigDecimal(expression.substring(position, position + count)));
+                    evaluationContext.setCurrentPosition(position + count);
+                } catch (MathematicalError ex){
+                    evaluationContext.setErrorMessage(ex.getMathematicalError());
+                    evaluationContext.setInErrorState();
+                }
             } else {
                 evaluationContext.setErrorMessage("Unexpected number token");
             }
             return true;
+        } else{
+            return false;
         }
-        return false;
     }
 }

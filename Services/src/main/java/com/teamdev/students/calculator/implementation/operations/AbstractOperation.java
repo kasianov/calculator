@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 import com.teamdev.students.calculator.intefaces.Operation;
 
 import java.math.BigDecimal;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
  * abstract class for all operations (functions and operators)
  */
 public abstract class AbstractOperation
-        implements Operation<BigDecimal> {
+        implements Operation<BigDecimal, MathematicalError> {
 
     private Associativity associativity;
     private String stringRepresentation;

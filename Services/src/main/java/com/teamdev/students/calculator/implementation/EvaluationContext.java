@@ -4,20 +4,20 @@ import com.teamdev.students.calculator.intefaces.FiniteStateMachineContext;
 
 import java.math.BigDecimal;
 
-public class EvaluationContext implements FiniteStateMachineContext<EvaluationState, BigDecimal, CalculatorEvaluator> {
+public class EvaluationContext implements FiniteStateMachineContext<EvaluationState, BigDecimal,MathematicalError> {
 
     private EvaluationState state;
     private int currentPosition;
     private String expression;
     private String errorMessage;
     private CalculatorEvaluator evaluator;
+    private boolean inErrorState;
 
     public EvaluationContext(String expression, CalculatorEvaluator evaluator) {
         this.expression = expression;
         this.evaluator = evaluator;
     }
 
-    @Override
     public CalculatorEvaluator getEvaluator() {
         return evaluator;
     }
@@ -32,6 +32,16 @@ public class EvaluationContext implements FiniteStateMachineContext<EvaluationSt
         } else {
             setErrorMessage("empty input string");
         }
+    }
+
+    @Override
+    public void setInErrorState() {
+        inErrorState = true;
+    }
+
+    @Override
+    public boolean isInErrorState() {
+        return inErrorState;
     }
 
     public String getErrorMessage() {
@@ -89,7 +99,7 @@ public class EvaluationContext implements FiniteStateMachineContext<EvaluationSt
     /**
      * evaluates a result of the input expression
      */
-    public BigDecimal getResult() {
+    public BigDecimal getResult() throws MathematicalError{
         return evaluator.getResult();
     }
 

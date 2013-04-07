@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.parsers;
 
 import com.teamdev.students.calculator.implementation.EvaluationContext;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 import com.teamdev.students.calculator.intefaces.Parser;
 
 public class FunctionSeparatorParser implements Parser<EvaluationContext> {
@@ -13,11 +14,13 @@ public class FunctionSeparatorParser implements Parser<EvaluationContext> {
         }
 
         if (!afterError) {
-            if (context.getEvaluator().pushFunctionSeparator()) {
+            try{
+                context.getEvaluator().pushFunctionSeparator();
                 context.setCurrentPosition(position + 1);
-                return true;
+            } catch (MathematicalError ex){
+                context.setErrorMessage(ex.getMathematicalError());
+                context.setInErrorState();
             }
-            return false;
         } else {
             context.setErrorMessage("Unexpected function separator");
         }

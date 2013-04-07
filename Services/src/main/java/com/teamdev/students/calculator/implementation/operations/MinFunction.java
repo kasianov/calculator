@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation.operations;
 
 import com.teamdev.students.calculator.implementation.Associativity;
+import com.teamdev.students.calculator.implementation.MathematicalError;
 
 import java.math.BigDecimal;
 
@@ -10,9 +11,9 @@ public class MinFunction extends AbstractOperation {
     }
 
     @Override
-    public BigDecimal getResult(BigDecimal[] arguments) {
-        if (arguments.length < getMinimumArgumentsCount()) {
-            return null;
+    public BigDecimal getResult(BigDecimal[] arguments) throws MathematicalError {
+        if (arguments.length < getMinimumArgumentsCount() || arguments.length > getMaximumArgumentsCount()) {
+            throw new MathematicalError("Wrong number of arguments in 'min' function");
         }
         BigDecimal min = arguments[0];
         for (BigDecimal argument : arguments) {

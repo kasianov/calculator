@@ -1,11 +1,21 @@
 package com.teamdev.students.calculator.intefaces;
 
-public interface Evaluator<Result,MathOperation extends Operation<Result>> {
+import com.teamdev.students.calculator.implementation.MathematicalError;
+
+public interface Evaluator<Result,
+        MathOperation extends Operation<Result, MathematicalError>,
+        MathError extends Exception> {
     void pushOperator(MathOperation operation);
+
     void pushLeftParenthesis();
-    boolean pushRightParenthesis();
-    boolean pushFunction(MathOperation operation);
-    boolean pushFunctionSeparator();
-    boolean pushValue(Result value);
-    Result getResult();
+
+    void pushRightParenthesis() throws MathError;
+
+    void pushFunction(MathOperation operation) throws MathError;
+
+    void pushFunctionSeparator() throws MathError;
+
+    void pushValue(Result value) throws MathError;
+
+    Result getResult() throws MathError;
 }
