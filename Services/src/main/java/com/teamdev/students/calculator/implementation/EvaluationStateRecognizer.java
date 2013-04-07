@@ -35,7 +35,8 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
                 new MaxFunction(),
                 new SumFunction(),
                 new SinFunction(),
-                new CosFunction());
+                new CosFunction(),
+                new PiFunction());
         FunctionParser functionParser = new FunctionParser(functionList);
 
         Map<EvaluationState, Parser<EvaluationContext>> evaluationStateParserMap = new HashMap<EvaluationState, Parser<EvaluationContext>>();
@@ -45,6 +46,7 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
         evaluationStateParserMap.put(FUNCTION, functionParser);
         evaluationStateParserMap.put(FUNCTION_SEPARATOR, new FunctionSeparatorParser());
         evaluationStateParserMap.put(LEFT_PARENTHESIS, new LeftParenthesisParser());
+        evaluationStateParserMap.put(LEFT_PARENTHESIS_AFTER_FUNCTION,new LeftParenthesisParser());
         evaluationStateParserMap.put(RIGHT_PARENTHESIS, new RightParenthesisParser());
 
         return new EvaluationStateRecognizer(evaluationStateParserMap);
