@@ -1,6 +1,7 @@
 package com.teamdev.students.calculator.implementation;
 
 import com.teamdev.students.calculator.implementation.operations.*;
+import com.teamdev.students.calculator.implementation.operations.factories.*;
 import com.teamdev.students.calculator.implementation.parsers.*;
 import com.teamdev.students.calculator.intefaces.Operation;
 import com.teamdev.students.calculator.intefaces.Parser;
@@ -19,25 +20,23 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
     }
 
     public static EvaluationStateRecognizer createEvaluationStateRecognizer() {
-        List<Operation<BigDecimal, MathematicalError>> operatorList = new ArrayList<Operation<BigDecimal, MathematicalError>>();
-        Collections.addAll(operatorList,
-                new BinaryMinusOperator(),
-                new PlusOperator(),
-                new MultiplyOperator(),
-                new DivideOperator(),
-                new PowerOperator());
-        OperatorParser binaryOperatorParser = new OperatorParser(operatorList);
+        Map<String,OperationFactory<BigDecimal,MathematicalError>> operatorMap = new HashMap<String, OperationFactory<BigDecimal, MathematicalError>>();
+        operatorMap.put(new BinaryMinusOperator().getStringRepresentation(), new BinaryMinusOperatorFactory());
+        operatorMap.put(new PlusOperator().getStringRepresentation(), new PlusOperatorFactory());
+        operatorMap.put(new MultiplyOperator().getStringRepresentation(), new MultiplyOperatorFactory());
+        operatorMap.put(new DivideOperator().getStringRepresentation(), new DivideOperatorFactory());
+        operatorMap.put(new PowerOperator().getStringRepresentation(), new PowerOperatorFactory());
+        OperatorParser binaryOperatorParser = new OperatorParser(operatorMap);
 
-        List<Operation<BigDecimal, MathematicalError>> functionList = new ArrayList<Operation<BigDecimal, MathematicalError>>();
-        Collections.addAll(functionList,
-                new SqrtFunction(),
-                new MinFunction(),
-                new MaxFunction(),
-                new SumFunction(),
-                new SinFunction(),
-                new CosFunction(),
-                new PiFunction());
-        FunctionParser functionParser = new FunctionParser(functionList);
+        Map<String,OperationFactory<BigDecimal,MathematicalError>> functionMap = new HashMap<String, OperationFactory<BigDecimal, MathematicalError>>();
+        functionMap.put(new SqrtFunction().getStringRepresentation(),new SqrtFunctionFactory());
+        functionMap.put(new MinFunction().getStringRepresentation(),new MinFunctionFactory());
+        functionMap.put(new MaxFunction().getStringRepresentation(),new MaxFunctionFactory());
+        functionMap.put(new SumFunction().getStringRepresentation(),new SumFunctionFactory());
+        functionMap.put(new SinFunction().getStringRepresentation(),new SinFunctionFactory());
+        functionMap.put(new CosFunction().getStringRepresentation(),new CosFunctionFactory());
+        functionMap.put(new PiFunction().getStringRepresentation(),new PiFunctionFactory());
+        FunctionParser functionParser = new FunctionParser(functionMap);
 
         Map<EvaluationState, Parser<EvaluationContext>> evaluationStateParserMap = new HashMap<EvaluationState, Parser<EvaluationContext>>();
         evaluationStateParserMap.put(FINISH, new EndOfExpressionParser());

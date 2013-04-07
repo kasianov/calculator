@@ -223,9 +223,11 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
         }
 
         public boolean incrementArgumentsCount() {
-            ++addedArgumentsCount;
-            function.setArgumentsCount(addedArgumentsCount);
-            return addedArgumentsCount <= function.getMaximumArgumentsCount();
+            if(++addedArgumentsCount <= function.getMaximumArgumentsCount()){
+                function.setArgumentsCount(addedArgumentsCount);
+                return true;
+            }
+            return false;
         }
 
         public boolean hasMinimumArgumentsCount() {

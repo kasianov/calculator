@@ -2,6 +2,7 @@ package com.teamdev.students.calculator.implementation.parsers;
 
 import com.teamdev.students.calculator.implementation.EvaluationContext;
 import com.teamdev.students.calculator.implementation.MathematicalError;
+import com.teamdev.students.calculator.implementation.operations.factories.OperationFactory;
 import com.teamdev.students.calculator.intefaces.Operation;
 import com.teamdev.students.calculator.intefaces.Parser;
 
@@ -14,12 +15,9 @@ import java.util.Map;
  * base class for function and operator parsers
  */
 public abstract class BaseOperationParser implements Parser<EvaluationContext> {
-    private Map<String, Operation<BigDecimal, MathematicalError>> stringOperationMap = new HashMap<String, Operation<BigDecimal, MathematicalError>>();
-
-    protected BaseOperationParser(List<Operation<BigDecimal, MathematicalError>> operations) {
-        for (Operation<BigDecimal, MathematicalError> operation : operations) {
-            stringOperationMap.put(operation.getStringRepresentation(), operation);
-        }
+    private Map<String,OperationFactory<BigDecimal,MathematicalError>> stringOperationFactoryMap;
+    protected BaseOperationParser(Map<String,OperationFactory<BigDecimal,MathematicalError>> stringOperationFactoryMap) {
+        this.stringOperationFactoryMap = stringOperationFactoryMap;
     }
 
     protected abstract boolean doPush(EvaluationContext context, Operation<BigDecimal, MathematicalError> operation);
@@ -32,10 +30,10 @@ public abstract class BaseOperationParser implements Parser<EvaluationContext> {
             return false;
         }
         String subExpression = expression.substring(position);
-        for (String key : stringOperationMap.keySet()) {
+        for (String key : stringOperationFactoryMap.keySet()) {
             if (subExpression.startsWith(key)) {
                 if (!afterError) {
-                    doPush(evaluationContext, stringOperationMap.get(key));
+                    doPush(evaluationContext, stringOperationFactoryMap.get(key).createOperation());
                     evaluationContext.setCurrentPosition(position + key.length());
                 } else {
                     evaluationContext.setErrorMessage("Unexpected operator [" + key + "]");
