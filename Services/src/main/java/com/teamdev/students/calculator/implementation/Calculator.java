@@ -24,7 +24,7 @@ public class Calculator extends AbstractFiniteStateMachine<
 
     @Override
     public void deadlock(EvaluationContext context) throws EvaluationException {
-        throw new EvaluationException(context.isInErrorState()? 0 : context.getCurrentPosition(),
+        throw new EvaluationException(context.getCurrentPosition(),
                 context.getExpression(),
                 context.getErrorMessage());
     }
