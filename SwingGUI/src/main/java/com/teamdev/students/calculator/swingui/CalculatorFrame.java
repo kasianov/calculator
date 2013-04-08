@@ -70,6 +70,7 @@ public class CalculatorFrame extends JFrame {
     }
 
     private void buttonResultClicked(ActionEvent event) {
+        textResult.setText("");
         if (calculator != null) {
             try {
                 textExpression.setText(textExpression.getText().replaceAll(" ",""));

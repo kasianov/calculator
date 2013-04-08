@@ -179,6 +179,16 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                 operationStack.pop();
                 outputQueue.add(operator);
             } else {
+                //pop out the left parenthesis to check out the next element if it is a function
+                //if it is not, then error
+                //if it is, then push left parenthesis back into the stack
+                operationStack.pop();
+                String operatorAfterLeftParenthesis = operationStack.peek();
+                if(operatorAfterLeftParenthesis == null || !operatorAfterLeftParenthesis.startsWith(functionBaseName)){
+                    throw new MathematicalError("The function separator is not in a function parentheses");
+                }
+                //'operator' is the left parenthesis here
+                operationStack.push(operator);
                 FunctionStackElement lastFunction = functionStack.peek();
                 if (lastFunction != null) {
                     if (!lastFunction.incrementArgumentsCount()) {
@@ -206,7 +216,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
         throw new MathematicalError("Wrong number of arguments for ["
                 + element.getFunction().getStringRepresentation()
                 + "] function\n"
-                + element.getExpectAndActualArgumentsCount());
+                + element.getExpectedArgumentsCount());
     }
 
     private class FunctionStackElement {
@@ -237,7 +247,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
             return addedArgumentsCount >= function.getMinimumArgumentsCount();
         }
 
-        public String getExpectAndActualArgumentsCount() {
+        public String getExpectedArgumentsCount() {
             String string = "Expect ";
             if (function.getMinimumArgumentsCount() == function.getMaximumArgumentsCount()) {
                 string += function.getMinimumArgumentsCount() + " argument(s)";
