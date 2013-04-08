@@ -23,14 +23,61 @@ public class EvaluationMatrix implements TransitionMatrix<EvaluationState> {
 
     public static EvaluationMatrix createEvaluationMatrix() {
         Map<EvaluationState, Set<EvaluationState>> evaluationStateSetMap = new HashMap<EvaluationState, Set<EvaluationState>>();
-        evaluationStateSetMap.put(START, EnumSet.of(NUMBER, LEFT_PARENTHESIS, FUNCTION));
-        evaluationStateSetMap.put(NUMBER, EnumSet.of(BINARY_OPERATOR, FINISH, RIGHT_PARENTHESIS, FUNCTION_SEPARATOR));
-        evaluationStateSetMap.put(BINARY_OPERATOR, EnumSet.of(NUMBER, LEFT_PARENTHESIS, FUNCTION));
-        evaluationStateSetMap.put(FUNCTION, EnumSet.of(LEFT_PARENTHESIS_AFTER_FUNCTION));
-        evaluationStateSetMap.put(FUNCTION_SEPARATOR, EnumSet.of(LEFT_PARENTHESIS, NUMBER, FUNCTION));
-        evaluationStateSetMap.put(LEFT_PARENTHESIS, EnumSet.of(NUMBER, LEFT_PARENTHESIS, FUNCTION));
-        evaluationStateSetMap.put(LEFT_PARENTHESIS_AFTER_FUNCTION, EnumSet.of(NUMBER, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, FUNCTION));
-        evaluationStateSetMap.put(RIGHT_PARENTHESIS, EnumSet.of(BINARY_OPERATOR, FINISH, RIGHT_PARENTHESIS, FUNCTION_SEPARATOR));
+        evaluationStateSetMap.put(START, EnumSet.of(
+                ONLY_POSITIVE_NUMBER,
+                LEFT_PARENTHESIS,
+                FUNCTION,
+                UNARY_MINUS_OPERATOR));
+
+        evaluationStateSetMap.put(NUMBER, EnumSet.of(
+                BINARY_OPERATOR,
+                FINISH,
+                RIGHT_PARENTHESIS,
+                FUNCTION_SEPARATOR));
+
+        evaluationStateSetMap.put(ONLY_POSITIVE_NUMBER, EnumSet.of(
+                BINARY_OPERATOR,
+                FINISH,
+                RIGHT_PARENTHESIS,
+                FUNCTION_SEPARATOR));
+
+        evaluationStateSetMap.put(BINARY_OPERATOR, EnumSet.of(
+                ONLY_POSITIVE_NUMBER,
+                LEFT_PARENTHESIS,
+                FUNCTION));
+
+        evaluationStateSetMap.put(UNARY_MINUS_OPERATOR, EnumSet.of(
+                ONLY_POSITIVE_NUMBER,
+                FUNCTION,
+                LEFT_PARENTHESIS));
+
+        evaluationStateSetMap.put(FUNCTION, EnumSet.of(
+                LEFT_PARENTHESIS_AFTER_FUNCTION));
+
+        evaluationStateSetMap.put(FUNCTION_SEPARATOR, EnumSet.of(
+                LEFT_PARENTHESIS,
+                ONLY_POSITIVE_NUMBER,
+                FUNCTION,
+                UNARY_MINUS_OPERATOR));
+
+        evaluationStateSetMap.put(LEFT_PARENTHESIS, EnumSet.of(
+                ONLY_POSITIVE_NUMBER,
+                LEFT_PARENTHESIS,
+                FUNCTION,
+                UNARY_MINUS_OPERATOR));
+
+        evaluationStateSetMap.put(LEFT_PARENTHESIS_AFTER_FUNCTION, EnumSet.of(
+                ONLY_POSITIVE_NUMBER,
+                LEFT_PARENTHESIS,
+                RIGHT_PARENTHESIS,
+                FUNCTION,
+                UNARY_MINUS_OPERATOR));
+
+        evaluationStateSetMap.put(RIGHT_PARENTHESIS, EnumSet.of(
+                BINARY_OPERATOR,
+                FINISH,
+                RIGHT_PARENTHESIS,
+                FUNCTION_SEPARATOR));
 
         return new EvaluationMatrix(FINISH, evaluationStateSetMap, START);
     }
@@ -52,8 +99,12 @@ public class EvaluationMatrix implements TransitionMatrix<EvaluationState> {
     }
 
     @Override
-    public Set<EvaluationState> getAllStates() {
-        return EnumSet.allOf(EvaluationState.class);
+    public Set<EvaluationState> getAllPossibleStates() {
+        Set<EvaluationState> evaluationStates = EnumSet.allOf(EvaluationState.class);
+        //remove NUMBER to make it possible to find BINARY_OPERATOR('-') or UNARY_MINUS_OPERATOR
+        //there is still ONLY_POSITIVE_NUMBER state to find numbers
+        evaluationStates.remove(EvaluationState.NUMBER);
+        return evaluationStates;
     }
 
 }

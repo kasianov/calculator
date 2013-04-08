@@ -9,5 +9,5 @@ public interface TransitionMatrix<State extends Enum> {
 
     Set<State> getPossibleStates(State currentState);
 
-    Set<State> getAllStates();
+    Set<State> getAllPossibleStates();
 }

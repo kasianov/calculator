@@ -41,7 +41,9 @@ public class EvaluationStateRecognizer implements StateRecognizer<EvaluationStat
         Map<EvaluationState, Parser<EvaluationContext>> evaluationStateParserMap = new HashMap<EvaluationState, Parser<EvaluationContext>>();
         evaluationStateParserMap.put(FINISH, new EndOfExpressionParser());
         evaluationStateParserMap.put(NUMBER, new DecimalParser());
+        evaluationStateParserMap.put(ONLY_POSITIVE_NUMBER, new OnlyPositiveDecimalParser());
         evaluationStateParserMap.put(BINARY_OPERATOR, binaryOperatorParser);
+        evaluationStateParserMap.put(UNARY_MINUS_OPERATOR, new UnaryMisusParser());
         evaluationStateParserMap.put(FUNCTION, functionParser);
         evaluationStateParserMap.put(FUNCTION_SEPARATOR, new FunctionSeparatorParser());
         evaluationStateParserMap.put(LEFT_PARENTHESIS, new LeftParenthesisParser());

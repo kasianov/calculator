@@ -6,8 +6,7 @@ import com.teamdev.students.calculator.intefaces.Parser;
 
 import java.math.BigDecimal;
 
-
-public class DecimalParser implements Parser<EvaluationContext> {
+public class OnlyPositiveDecimalParser implements Parser<EvaluationContext> {
     @Override
     public boolean tryParse(EvaluationContext evaluationContext, boolean afterError) {
         String expression = evaluationContext.getExpression();
@@ -24,10 +23,6 @@ public class DecimalParser implements Parser<EvaluationContext> {
                 number = tempNumber;
                 ++count;
             } catch (Exception ex) {
-                if (count == 1 && expression.charAt(position) == '-') {
-                    ++count;
-                    continue;
-                }
                 break;
             }
         }
@@ -42,11 +37,7 @@ public class DecimalParser implements Parser<EvaluationContext> {
                     evaluationContext.setInErrorState();
                 }
             } else {
-                if(number.compareTo(new BigDecimal("0")) >= 0){
-                    evaluationContext.setErrorMessage("Unexpected number token");
-                } else{
-                    evaluationContext.setErrorMessage("Unexpected negative number token");
-                }
+                evaluationContext.setErrorMessage("Unexpected number token");
             }
         } else{
             return false;

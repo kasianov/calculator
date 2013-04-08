@@ -46,7 +46,7 @@ public abstract class AbstractFiniteStateMachine<
                 return true;
             }
         }
-        for (State state : matrix.getAllStates()) {
+        for (State state : matrix.getAllPossibleStates()) {
             if (recognizer.accept(state, context, true)) {
                 return false;
             }
