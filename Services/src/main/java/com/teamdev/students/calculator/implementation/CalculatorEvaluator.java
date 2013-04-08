@@ -77,9 +77,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
         if (lastFunction != null
                 && lastFunction.getAddedArgumentsCount() == 0
                 && !lastFunction.incrementArgumentsCount()) {
-            throw new MathematicalError("Wrong number of arguments for ["
-                    + lastFunction.getFunction().getStringRepresentation()
-                    + "] function");
+            throwWrongNumberOfArguments(lastFunction);
         }
     }
 
@@ -138,9 +136,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                     outputQueue.add(operator);
                     FunctionStackElement lastFunction = functionStack.pop();
                     if (!lastFunction.hasMinimumArgumentsCount()) {
-                        throw new MathematicalError("Wrong number of arguments for ["
-                                + lastFunction.getFunction().getStringRepresentation()
-                                + "] function");
+                        throwWrongNumberOfArguments(lastFunction);
                     }
                 }
                 return;
@@ -165,9 +161,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
         if (lastFunction != null
                 && lastFunction.getAddedArgumentsCount() == 0
                 && !lastFunction.incrementArgumentsCount()) {
-            throw new MathematicalError("Wrong number of arguments for ["
-                    + lastFunction.getFunction().getStringRepresentation()
-                    + "] function");
+            throwWrongNumberOfArguments(lastFunction);
         }
     }
 
@@ -186,12 +180,14 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
                 outputQueue.add(operator);
             } else {
                 FunctionStackElement lastFunction = functionStack.peek();
-                if (!lastFunction.incrementArgumentsCount()) {
-                    throw new MathematicalError("Wrong number of arguments for ["
-                            + lastFunction.getFunction().getStringRepresentation()
-                            + "] function");
+                if (lastFunction != null) {
+                    if (!lastFunction.incrementArgumentsCount()) {
+                        throwWrongNumberOfArguments(lastFunction);
+                    }
+                    return;
+                } else {
+                    break;
                 }
-                return;
             }
             operator = operationStack.peek();
         }
@@ -204,6 +200,13 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
      */
     public BigDecimal getResult() throws MathematicalError {
         return evaluateResult();
+    }
+
+    private void throwWrongNumberOfArguments(FunctionStackElement element)throws MathematicalError{
+        throw new MathematicalError("Wrong number of arguments for ["
+                + element.getFunction().getStringRepresentation()
+                + "] function\n"
+                + element.getExpectAndActualArgumentsCount());
     }
 
     private class FunctionStackElement {
@@ -223,7 +226,7 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
         }
 
         public boolean incrementArgumentsCount() {
-            if(++addedArgumentsCount <= function.getMaximumArgumentsCount()){
+            if (++addedArgumentsCount <= function.getMaximumArgumentsCount()) {
                 function.setArgumentsCount(addedArgumentsCount);
                 return true;
             }
@@ -232,6 +235,18 @@ public class CalculatorEvaluator implements Evaluator<BigDecimal, Operation<BigD
 
         public boolean hasMinimumArgumentsCount() {
             return addedArgumentsCount >= function.getMinimumArgumentsCount();
+        }
+
+        public String getExpectAndActualArgumentsCount() {
+            String string = "Expect ";
+            if (function.getMinimumArgumentsCount() == function.getMaximumArgumentsCount()) {
+                string += function.getMinimumArgumentsCount() + " argument(s)";
+            } else {
+                string += "minimum " + function.getMinimumArgumentsCount()
+                        + " and maximum " + function.getMaximumArgumentsCount()
+                        + " argument(s)";
+            }
+            return string;
         }
     }
 }
